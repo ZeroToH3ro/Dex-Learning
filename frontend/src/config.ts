@@ -1,7 +1,7 @@
 // Configuration for the DEX smart contract
 export const CONTRACT_CONFIG = {
-  // Replace with your actual deployed contract addresses
-  PACKAGE_ID: "0x...", // Your deployed package ID
+  // Your deployed package ID
+  PACKAGE_ID: "0x3673547b8917685622ddc09c094f206169c4a655288766340ae10c2128065ee8",
   MODULE_NAME: "dex",
   
   // Token configurations
@@ -9,26 +9,26 @@ export const CONTRACT_CONFIG = {
     name: "Token A",
     symbol: "TOKENA",
     decimals: 9,
-    type: "0x...::token_a::TOKEN_A" // Replace with actual type
+    type: "0x3673547b8917685622ddc09c094f206169c4a655288766340ae10c2128065ee8::token_a::TOKEN_A"
   },
   
   TOKEN_B: {
     name: "Token B", 
     symbol: "TOKENB",
     decimals: 9,
-    type: "0x...::token_b::TOKEN_B" // Replace with actual type
+    type: "0x3673547b8917685622ddc09c094f206169c4a655288766340ae10c2128065ee8::token_b::TOKEN_B"
   },
   
   LP_TOKEN: {
     name: "LP Token",
     symbol: "LP",
     decimals: 9,
-    type: "0x...::lp_token::LP_TOKEN" // Replace with actual type
+    type: "0x3673547b8917685622ddc09c094f206169c4a655288766340ae10c2128065ee8::lp_token::LP_TOKEN"
   },
   
   // Network configuration
-  NETWORK: "devnet", // or "testnet", "mainnet"
-  RPC_URL: "https://fullnode.devnet.sui.io:443"
+  NETWORK: "testnet", // or "testnet", "mainnet"
+  RPC_URL: "https://fullnode.testnet.sui.io:443"
 };
 
 // Function names in the smart contract

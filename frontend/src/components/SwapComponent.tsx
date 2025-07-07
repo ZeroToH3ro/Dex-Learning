@@ -101,7 +101,7 @@ const SwapComponent: React.FC<SwapComponentProps> = ({ poolId }) => {
         );
       }
 
-      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb });
+      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb as any });
       console.log('Swap successful:', result);
       
       // Reset form

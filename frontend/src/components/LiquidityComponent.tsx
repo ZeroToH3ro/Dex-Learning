@@ -49,7 +49,7 @@ const LiquidityComponent: React.FC<LiquidityComponentProps> = ({ poolId }) => {
         treasuryCapId
       );
 
-      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb });
+      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb as any });
       console.log('Add liquidity successful:', result);
       
       // Reset form
@@ -88,7 +88,7 @@ const LiquidityComponent: React.FC<LiquidityComponentProps> = ({ poolId }) => {
         treasuryCapId
       );
 
-      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb });
+      const result = await signAndExecuteTransactionBlock({ transactionBlock: txb as any });
       console.log('Remove liquidity successful:', result);
       
       // Reset form

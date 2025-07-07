@@ -46,8 +46,8 @@ module dex::dex {
     }
 
     fun init(_witness: DEX, _ctx: &mut TxContext) {
-            // DEX module doesn't need to create currency
-            // LP_TOKEN currency is created in its own module
+        // DEX module doesn't need to create currency
+        // LP_TOKEN currency is created in its own module
     }
 
     public entry fun create_pool(

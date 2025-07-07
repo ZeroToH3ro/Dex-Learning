@@ -1,29 +1,28 @@
-import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { CONTRACT_CONFIG, FUNCTIONS } from './config';
+import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
+import { CONTRACT_CONFIG, FUNCTIONS } from "../config";
 
 export class DEXService {
   private client: SuiClient;
 
   constructor() {
     this.client = new SuiClient({
-      url: getFullnodeUrl(CONTRACT_CONFIG.NETWORK as 'devnet' | 'testnet' | 'mainnet')
+      url: getFullnodeUrl(
+        CONTRACT_CONFIG.NETWORK as "devnet" | "testnet" | "mainnet"
+      ),
     });
   }
 
   // Create a new liquidity pool
-  async createPool(tokenA: string, tokenB: string, signer: string) {
-    const txb = new TransactionBlock();
-    
-    txb.moveCall({
+  async createPool(tokenA: string, tokenB: string) {
+    const tx = new Transaction();
+
+    tx.moveCall({
       target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.CREATE_POOL}`,
-      arguments: [
-        txb.object(tokenA),
-        txb.object(tokenB)
-      ]
+      arguments: [tx.object(tokenA), tx.object(tokenB)],
     });
 
-    return txb;
+    return tx;
   }
 
   // Add liquidity to existing pool
@@ -33,19 +32,19 @@ export class DEXService {
     tokenB: string,
     treasuryCapId: string
   ) {
-    const txb = new TransactionBlock();
-    
-    txb.moveCall({
+    const tx = new Transaction();
+
+    tx.moveCall({
       target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.ADD_LIQUIDITY}`,
       arguments: [
-        txb.object(poolId),
-        txb.object(tokenA),
-        txb.object(tokenB),
-        txb.object(treasuryCapId)
-      ]
+        tx.object(poolId),
+        tx.object(tokenA),
+        tx.object(tokenB),
+        tx.object(treasuryCapId),
+      ],
     });
 
-    return txb;
+    return tx;
   }
 
   // Remove liquidity from pool
@@ -54,78 +53,70 @@ export class DEXService {
     lpTokens: string,
     treasuryCapId: string
   ) {
-    const txb = new TransactionBlock();
-    
-    txb.moveCall({
+    const tx = new Transaction();
+
+    tx.moveCall({
       target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.REMOVE_LIQUIDITY}`,
       arguments: [
-        txb.object(poolId),
-        txb.object(lpTokens),
-        txb.object(treasuryCapId)
-      ]
+        tx.object(poolId),
+        tx.object(lpTokens),
+        tx.object(treasuryCapId),
+      ],
     });
 
-    return txb;
+    return tx;
   }
 
   // Swap Token A for Token B
-  async swapAToB(
-    poolId: string,
-    tokenA: string,
-    minTokenBOut: number
-  ) {
-    const txb = new TransactionBlock();
-    
-    txb.moveCall({
+  async swapAToB(poolId: string, tokenA: string, minTokenBOut: number) {
+    const tx = new Transaction();
+
+    tx.moveCall({
       target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.SWAP_A_TO_B}`,
       arguments: [
-        txb.object(poolId),
-        txb.object(tokenA),
-        txb.pure(minTokenBOut)
-      ]
+        tx.object(poolId),
+        tx.object(tokenA),
+        tx.pure.u64(minTokenBOut),
+      ],
     });
 
-    return txb;
+    return tx;
   }
 
   // Swap Token B for Token A
-  async swapBToA(
-    poolId: string,
-    tokenB: string,
-    minTokenAOut: number
-  ) {
-    const txb = new TransactionBlock();
-    
-    txb.moveCall({
+  async swapBToA(poolId: string, tokenB: string, minTokenAOut: number) {
+    const tx = new Transaction();
+
+    tx.moveCall({
       target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.SWAP_B_TO_A}`,
       arguments: [
-        txb.object(poolId),
-        txb.object(tokenB),
-        txb.pure(minTokenAOut)
-      ]
+        tx.object(poolId),
+        tx.object(tokenB),
+        tx.pure.u64(minTokenAOut),
+      ],
     });
 
-    return txb;
+    return tx;
   }
 
   // Get pool reserves
   async getReserves(poolId: string) {
     try {
-      const result = await this.client.devInspectTransactionBlock({
-        transactionBlock: (() => {
-          const txb = new TransactionBlock();
-          txb.moveCall({
-            target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.GET_RESERVES}`,
-            arguments: [txb.object(poolId)]
-          });
-          return txb;
-        })(),
-        sender: '0x0000000000000000000000000000000000000000000000000000000000000000'
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.GET_RESERVES}`,
+        arguments: [tx.object(poolId)],
       });
-      
+
+      const result = await this.client.devInspectTransactionBlock({
+        transactionBlock: tx,
+        sender:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      });
+
       return result;
     } catch (error) {
-      console.error('Error getting reserves:', error);
+      console.error("Error getting reserves:", error);
       return null;
     }
   }
@@ -137,25 +128,25 @@ export class DEXService {
     isAToB: boolean
   ) {
     try {
-      const result = await this.client.devInspectTransactionBlock({
-        transactionBlock: (() => {
-          const txb = new TransactionBlock();
-          txb.moveCall({
-            target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.CALCULATE_SWAP_OUTPUT}`,
-            arguments: [
-              txb.object(poolId),
-              txb.pure(inputAmount),
-              txb.pure(isAToB)
-            ]
-          });
-          return txb;
-        })(),
-        sender: '0x0000000000000000000000000000000000000000000000000000000000000000'
+      const tx = new Transaction();
+      tx.moveCall({
+        target: `${CONTRACT_CONFIG.PACKAGE_ID}::${CONTRACT_CONFIG.MODULE_NAME}::${FUNCTIONS.CALCULATE_SWAP_OUTPUT}`,
+        arguments: [
+          tx.object(poolId),
+          tx.pure.u64(inputAmount),
+          tx.pure.bool(isAToB),
+        ],
       });
-      
+
+      const result = await this.client.devInspectTransactionBlock({
+        transactionBlock: tx,
+        sender:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+      });
+
       return result;
     } catch (error) {
-      console.error('Error calculating swap output:', error);
+      console.error("Error calculating swap output:", error);
       return null;
     }
   }
@@ -165,12 +156,30 @@ export class DEXService {
     try {
       const coins = await this.client.getCoins({
         owner: address,
-        coinType: coinType
+        coinType: coinType,
       });
       return coins.data;
     } catch (error) {
-      console.error('Error getting user coins:', error);
+      console.error("Error getting user coins:", error);
       return [];
+    }
+  }
+
+  // Execute transaction with wallet
+  async executeTransaction(tx: Transaction, signer: any) {
+    try {
+      const result = await this.client.signAndExecuteTransaction({
+        signer: signer,
+        transaction: tx,
+        options: {
+          showEffects: true,
+          showObjectChanges: true,
+        },
+      });
+      return result;
+    } catch (error) {
+      console.error("Error executing transaction:", error);
+      throw error;
     }
   }
 }

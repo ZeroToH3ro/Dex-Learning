@@ -8,7 +8,7 @@ import './index.css';
 const queryClient = new QueryClient();
 
 // Replace with your actual pool ID after deployment
-const POOL_ID = "0x...";
+const POOL_ID = "0x19ea779976bff95fd02ba6d59a15b181a3df7be0ffe0be030e42a5f3f0571bb7";
 
 function App() {
   const [activeTab, setActiveTab] = React.useState<'swap' | 'liquidity'>('swap');
